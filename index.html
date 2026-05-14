@@ -943,23 +943,21 @@
       </div>
     </div>
     <div class="reveal">
-      <div data-fs-success style="display:none; font-family:'Jost',sans-serif; font-size:0.95rem; letter-spacing:0.1em; color:var(--sand); padding:24px 0;">Enquiry sent &#10003; &mdash; We'll be in touch soon.</div>
-      <div data-fs-error style="display:none; font-size:0.85rem; color:#e07070; padding:12px 0;"></div>
       <form class="contact-form" id="enquiryForm">
         <div class="form-row">
           <div class="form-group">
             <label>First Name</label>
-            <input type="text" name="first_name" placeholder="Jane" data-fs-field required />
+            <input type="text" name="first_name" placeholder="Jane" required />
           </div>
           <div class="form-group">
             <label>Last Name</label>
-            <input type="text" name="last_name" placeholder="Smith" data-fs-field required />
+            <input type="text" name="last_name" placeholder="Smith" required />
           </div>
         </div>
         <div class="form-row form-full mb">
           <div class="form-group form-full">
             <label>Email Address</label>
-            <input type="email" name="email" placeholder="jane@example.com" data-fs-field required />
+            <input type="email" name="email" placeholder="jane@example.com" required />
           </div>
         </div>
         <div class="form-row form-full mb">
@@ -978,10 +976,10 @@
         <div class="form-row form-full mb">
           <div class="form-group form-full">
             <label>Tell us about your project</label>
-            <textarea name="message" data-fs-field placeholder="Describe your space, vision, and any key requirements&hellip;" required></textarea>
+            <textarea name="message" placeholder="Describe your space, vision, and any key requirements&hellip;" required></textarea>
           </div>
         </div>
-        <button type="submit" class="form-submit" id="submitBtn" data-fs-submit-btn>Send Enquiry &rarr;</button>
+        <button type="submit" class="form-submit" id="submitBtn">Send Enquiry &rarr;</button>
       </form>
     </div>
   </section>
@@ -1033,10 +1031,32 @@
       nav.style.transition = 'background 0.4s ease';
     });
 
-    // Formspree Ajax
-    window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-    formspree('initForm', { formElement: '#enquiryForm', formId: 'mrejvvlz' });
+    // Enquiry form
+    const form = document.getElementById('enquiryForm');
+    const submitBtn = document.getElementById('submitBtn');
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      submitBtn.textContent = 'Sending…';
+      submitBtn.disabled = true;
+      try {
+        const res = await fetch('https://formspree.io/f/mrejvvlz', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          submitBtn.textContent = 'Enquiry Sent ✓';
+          submitBtn.style.background = 'var(--warm)';
+          form.reset();
+        } else {
+          submitBtn.textContent = 'Something went wrong — try again';
+          submitBtn.disabled = false;
+        }
+      } catch {
+        submitBtn.textContent = 'Something went wrong — try again';
+        submitBtn.disabled = false;
+      }
+    });
   </script>
-<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
